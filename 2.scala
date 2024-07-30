@@ -2,16 +2,30 @@ import scala.io.StdIn
 
 object StudentRecordsApp extends App {
   
-  // Function to read student information
-  def getStudentInfo(): (String, Int, Int, Double, Char) = {
-    println("Enter student name:")
-    val name = StdIn.readLine()
+  // Function to read student information with validation and retries
+  def getValidatedStudentInfo(): (String, Int, Int, Double, Char) = {
+    var isValid = false
+    var name = ""
+    var marks = 0
+    var totalMarks = 0
 
-    println("Enter marks obtained:")
-    val marks = StdIn.readInt()
+    while (!isValid) {
+      println("Enter student name:")
+      name = StdIn.readLine()
 
-    println("Enter total possible marks:")
-    val totalMarks = StdIn.readInt()
+      println("Enter marks obtained:")
+      marks = StdIn.readInt()
+
+      println("Enter total possible marks:")
+      totalMarks = StdIn.readInt()
+
+      val validation = validateInput(name, marks, totalMarks)
+      isValid = validation._1
+
+      if (!isValid) {
+        println(s"Invalid input: ${validation._2.get}")
+      }
+    }
 
     val percentage = calculatePercentage(marks, totalMarks)
     val grade = assignGrade(percentage)
@@ -57,38 +71,7 @@ object StudentRecordsApp extends App {
     }
   }
 
-  // Function to get student info with retry until valid data is provided
-  def getInfoWithRetry(): (String, Int, Int, Double, Char) = {
-    var isValid = false
-    var name = ""
-    var marks = 0
-    var totalMarks = 0
-
-    while (!isValid) {
-      println("Enter student name:")
-      name = StdIn.readLine()
-
-      println("Enter marks obtained:")
-      marks = StdIn.readInt()
-
-      println("Enter total possible marks:")
-      totalMarks = StdIn.readInt()
-
-      val validation = validateInput(name, marks, totalMarks)
-      isValid = validation._1
-
-      if (!isValid) {
-        println(s"Invalid input: ${validation._2.get}")
-      }
-    }
-
-    val percentage = calculatePercentage(marks, totalMarks)
-    val grade = assignGrade(percentage)
-
-    (name, marks, totalMarks, percentage, grade)
-  }
-
   // Main logic to demonstrate the application
-  val studentRecord = getInfoWithRetry()
+  val studentRecord = getValidatedStudentInfo()
   printStudentRecord(studentRecord)
 }
